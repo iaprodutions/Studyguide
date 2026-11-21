@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>LPC & OPC Study Companion</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#0b1220;--panel:#131e30;--panel2:#1a2940;--text:#edf3fb;--muted:#9eafc5;--line:#2a3a52;--accent:#79b8ff;--green:#6ed6ad;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:11px 15px}
+button.primary{background:var(--accent);color:#081321;border-color:var(--accent);font-weight:700}
+button.ghost{background:transparent}button:disabled{opacity:.35;cursor:not-allowed}
+header{position:sticky;top:0;z-index:5;background:#0b1220ee;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:14px max(16px,calc((100vw - 850px)/2));display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;letter-spacing:.2px}.brand small{display:block;color:var(--muted);font-weight:500;font-size:11px;letter-spacing:1.2px}
+main{max-width:850px;margin:auto;padding:22px 16px 110px}.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase}
+h1{font-size:clamp(27px,6vw,38px);line-height:1.15;margin:8px 0 10px}h2{font-size:24px;margin:8px 0}h3{font-size:18px;margin:0 0 8px}
+p{color:#d5dfed}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.subject,.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:17px;text-align:left;min-height:126px}
+.subject .symbol{font-size:24px}.subject strong{display:block;margin:8px 0 2px}.subject small{color:var(--muted)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:14px 0}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.tab{padding:12px 5px;font-size:13px}.tab.active{border-color:var(--accent);background:#17314d;color:#cfe6ff}
+.slide{min-height:340px;display:flex;flex-direction:column;justify-content:center}.slide h2{font-size:30px}.slide .body{font-size:17px}.slide ul{padding-left:22px}.slide li{margin:10px 0;color:#d5dfed}
+.progress{height:5px;background:#26364d;border-radius:9px;overflow:hidden;margin:14px 0}.progress span{display:block;height:100%;background:var(--accent)}
+.navrow{display:flex;justify-content:space-between;gap:10px;margin-top:16px}.navrow button{flex:1}
+textarea{width:100%;min-height:210px;resize:vertical;background:#0d1727;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:14px;outline:none}
+textarea:focus,input:focus{border-color:var(--accent)}.note-meta{font-size:12px;color:var(--muted);margin-top:8px}
+.flashcard{min-height:280px;display:flex;flex-direction:column;justify-content:center;text-align:center;align-items:center;gap:16px}
+.flashcard .question{font-size:24px;font-weight:750}.answer{background:#102d2a;border:1px solid #286252;padding:14px;border-radius:12px;width:100%;color:#c8f5e5}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:4px 10px;color:var(--muted);font-size:12px}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:35px}
+@media(max-width:520px){.grid{grid-template-columns:1fr 1fr}.subject{padding:13px;min-height:118px}.subject strong{font-size:14px}.tabs{gap:5px}.tab{font-size:12px}}
+.editor{min-height:260px;background:#0d1727;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:14px;outline:none;line-height:1.65}.editor:focus{border-color:var(--accent)}.editor li{margin:8px 0}.editor img{max-width:100%}.subject{min-width:0}.topic-open{color:var(--text)}.topic-open strong{display:block;margin:8px 0 2px}.delete-topic{font-size:12px;padding:7px 10px;color:#ffb9b9;border-color:#70404a}label{display:block;color:var(--muted);font-size:13px;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <button class="ghost" id="backBtn" style="display:none" aria-label="Back">←</button>
+  <div class="brand">LPC & OPC <small>STUDY COMPANION</small></div>
+  <span style="margin-left:auto" class="pill" id="saveStatus">Saved on this device</span>
+</header>
+<main id="app"></main>
+<script>
+let topics = [
+ {id:"airframes",name:"Airframes & Flight Controls",icon:"✈️",slides:[
+  ["Flaps","Type: Full-span, double-slotted Fowler flaps.",["Full span: extend from the inboard wing area to the wing tips.","Double-slotted: the slots help re-energise the boundary layer and delay airflow separation.","Fowler: the flaps move backwards and downwards.","Six flap sections in total — three on each wing: inboard fore flap, inboard trailing flap and outboard fore flap."]],
+  ["Flap working mechanism","Hydraulic actuation and speed control",["Hydraulically actuated by an actuator in the cabin roof through push-pull rods, levers and bell cranks.","Restrictors in the hydraulic lines limit fluid flow and therefore limit flap extension and retraction speeds.","Retraction is slower than extension.","This is deliberate: it minimises out-of-trim control forces if the flaps retract rapidly during a go-around."]],
+  ["Geared servo tabs","Reduce the force required to move control surfaces.",["Move in the opposite direction to the control surface movement.","Located on the inboard sides of both ailerons and on the bottom of the rudder."]],
+  ["Trim tab","Manually removes sustained control pressure.",["Used to set the required deflection on a control surface to remove control pressure.","Located on the left aileron, left elevator and top of the rudder."]],
+  ["Flap elevator interconnect tab","Automatically helps counter the pitch-up tendency when flaps extend.",["Provides automatic adjustment to reduce aircraft pitch-up when flaps are extended.","Most effective after 10° of flap.","Located on the right elevator."]],
+  ["Wing fences","Help preserve aileron effectiveness at low speed.",["Direct spanwise airflow along the wing towards the trailing edge and ailerons.","This helps make the ailerons more effective at slow speeds."]],
+  ["Stall bars","Encourage the inboard wing to stall first.",["Designed to make the inboard area of the wing stall first.","A more gradual stall helps retain aileron effectiveness for longer.","For float operations: two stall bars on the right wing and one on the left, to help both wings stall evenly given the aircraft's left-roll tendency."]],
+  ["Stall vane","Electrical stall-warning switches.",["When raised, the vane operates electrical switches that provide power to the stall warning light and horn.","Two vanes on the left wing: one lower and one slightly higher.","The lower vane is always active. The upper vane becomes active when flaps are extended beyond 12°.","Warning occurs approximately 4–9 knots above stall speed."]],
+  ["Spring strut","Returns the control column towards neutral.",["Located behind the co-pilot's control column.","Helps bring the control column to the neutral position."]],
+  ["Bonding straps & static wicks","Electrical bonding and static discharge.",["Bonding straps are provided at flight-surface hinge locations to improve electrical grounding of the aircraft structure.","Proper grounding helps minimise hinge damage during lightning strikes.","Static wicks are fitted to flight-control trailing edges: two on each wing, three on the rudder, three on the right elevator and two on the left elevator.","Total: 10 static wicks. Minimum required for flight: 8."]]
+ ],cards:[
+ ["What type of flaps are fitted?","Full-span, double-slotted Fowler flaps."],
+ ["What does Fowler describe?","The flap moves backwards and downwards."],
+ ["How many flap sections are there?","Six in total: three on each wing."],
+ ["What actuates the flaps?","A hydraulic actuator in the cabin roof."],
+ ["Why are restrictors fitted in flap hydraulic lines?","To limit fluid flow and flap operating speed."],
+ ["Which is slower: flap extension or retraction?","Retraction is slower than extension."],
+ ["Why is flap retraction deliberately slower?","To minimise out-of-trim control forces during a go-around."],
+ ["Which way do geared servo tabs move?","Opposite to the control surface movement."],
+ ["What is the purpose of a trim tab?","To remove sustained control pressure by setting tab deflection."],
+ ["Where is the flap elevator interconnect tab?","On the right elevator."],
+ ["When is the flap elevator interconnect most effective?","After 10° of flap."],
+ ["What do wing fences do?","Guide spanwise airflow towards the trailing edge and ailerons."],
+ ["Where are stall bars fitted for float operations?","Two on the right wing and one on the left."],
+ ["How many stall vanes are fitted, and where?","Two on the left wing: one lower and one slightly higher."],
+ ["When does the upper stall vane become active?","When flaps are extended beyond 12°."],
+ ["How far above stall speed does the warning occur?","Approximately 4–9 knots."],
+ ["Where is the spring strut located?","Behind the co-pilot's control column."],
+ ["How many static wicks are fitted?","Ten total."],
+ ["What is the minimum number of static wicks required for flight?","Eight."]
+ ]},
+ {id:"hydraulic",name:"Hydraulic System",icon:"💧",slides:[],cards:[]},
+ {id:"fuel",name:"Fuel System",icon:"⛽",slides:[],cards:[]},
+ {id:"powerplant",name:"Power Plant",icon:"⚙️",slides:[],cards:[]},
+ {id:"propeller",name:"Propeller",icon:"🌀",slides:[],cards:[]},
+ {id:"performance",name:"Performance",icon:"📈",slides:[],cards:[]},
+ {id:"massbalance",name:"Mass & Balance",icon:"⚖️",slides:[],cards:[]},
+ {id:"om",name:"OM Part A & B Reviews",icon:"📘",slides:[],cards:[]}
+];
+let currentTopic=null, section="study", slideIndex=0, cardIndex=0, revealed=false;
+const app=document.getElementById("app"), backBtn=document.getElementById("backBtn");
+const DATA_KEY="lpcopc-study-companion-v2";
+const key=(topic,sub)=>`lpcopc-note-${topic}-${sub}`;
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function persist(){try{localStorage.setItem(DATA_KEY,JSON.stringify(topics));document.getElementById("saveStatus").textContent="Saved on this device ✓";return true}catch(e){document.getElementById("saveStatus").textContent="Storage full — use smaller images";alert("Could not save. Your browser's local storage may be full. Try smaller pictures or remove unused images.");return false}}
+function loadSaved(){try{const saved=JSON.parse(localStorage.getItem(DATA_KEY)||"null");if(Array.isArray(saved)){const map=new Map(saved.map(t=>[t.id,t]));topics=topics.map(base=>map.get(base.id)||base);saved.forEach(t=>{if(!topics.some(x=>x.id===t.id))topics.push(t)});}topics.forEach(t=>{if(typeof t.notes!=="string"){let legacy=localStorage.getItem(key(t.id,"general"))||"";const oldSlideNotes=t.slides.map((slide,i)=>({title:slide[0],text:localStorage.getItem(key(t.id,i))||""})).filter(x=>x.text.trim());if(oldSlideNotes.length){legacy += (legacy?"\n\n":"")+oldSlideNotes.map(x=>`[${x.title}]\n${x.text}`).join("\n\n");}t.notes=legacy;}});}catch(e){console.warn("Saved study data could not be loaded",e)}}
+loadSaved();
+function showHome(){currentTopic=null;backBtn.style.display="none";app.innerHTML=`<div class="eyebrow">Your training workspace</div><h1>What would you like to study?</h1><p class="muted">Choose a subject to open its study slides, additional notes and review cards.</p><div class="actions"><button class="primary" id="addTopic">＋ Add main topic</button></div><div class="grid">${topics.map(t=>`<div class="subject"><button class="topic-open" data-topic="${escapeHtml(t.id)}" style="display:block;width:100%;border:0;background:none;text-align:left;padding:0"><span class="symbol">${escapeHtml(t.icon||"📚")}</span><strong>${escapeHtml(t.name)}</strong><small>${t.slides.length} study slides · ${t.cards.length} review cards</small></button><div class="actions" style="margin:12px 0 0"><button class="delete-topic" data-delete="${escapeHtml(t.id)}">Delete topic</button></div></div>`).join("")}</div><footer>Study material, edits and pictures are stored on this device.</footer>`;
+ app.querySelectorAll("[data-topic]").forEach(b=>b.onclick=()=>openTopic(b.dataset.topic));
+ app.querySelectorAll("[data-delete]").forEach(b=>b.onclick=()=>deleteTopic(b.dataset.delete));
+ document.getElementById("addTopic").onclick=addTopic;
+}
+function addTopic(){const name=prompt("Enter the new main topic name:");if(!name||!name.trim())return;const icon=prompt("Choose an icon/emoji for this topic (optional):","📚")||"📚";const id="custom-"+Date.now();topics.push({id,name:name.trim(),icon,slides:[],cards:[]});persist();showHome()}
+function deleteTopic(id){const t=topics.find(x=>x.id===id);if(!t)return;if(!confirm(`Delete “${t.name}” and all its slides, notes and review cards? This cannot be undone.`))return;topics=topics.filter(x=>x.id!==id);persist();showHome()}
+function openTopic(id){currentTopic=topics.find(t=>t.id===id);section="study";slideIndex=0;cardIndex=0;renderTopic()}
+function renderTopic(){backBtn.style.display="block";const t=currentTopic;const tabs=`<div class="tabs"><button class="tab ${section==="study"?"active":""}" data-section="study">📖 Study</button><button class="tab ${section==="notes"?"active":""}" data-section="notes">📝 Additional Notes</button><button class="tab ${section==="review"?"active":""}" data-section="review">🧠 Review</button></div>`;let content="";if(section==="study")content=renderStudy();if(section==="notes")content=renderNotes();if(section==="review")content=renderReview();app.innerHTML=`<div class="eyebrow">${escapeHtml(t.name)}</div><h1>${section==="study"?"Study slides":section==="notes"?"Your additional notes":"Flashcard review"}</h1><p class="muted">Your three-part learning space for this subject.</p>${tabs}${content}`;app.querySelectorAll("[data-section]").forEach(b=>b.onclick=()=>{section=b.dataset.section;renderTopic()});bindSection()}
+function slideHtml(s){if(s[3])return s[3];return `${s[1]?`<p>${escapeHtml(s[1])}</p>`:""}<ul>${(s[2]||[]).map(x=>`<li>${escapeHtml(x)}</li>`).join("")}</ul>`}
+function renderStudy(){const slides=currentTopic.slides;if(!slides.length)return `<div class="panel"><h2>No study slides yet</h2><p class="muted">Create your first slide for this topic.</p><button class="primary" id="addSlide">＋ Add first slide</button></div>`;const s=slides[slideIndex];return `<div class="progress"><span style="width:${(slideIndex+1)/slides.length*100}%"></span></div><div class="panel slide"><div class="eyebrow">Slide ${slideIndex+1} of ${slides.length}</div><h2>${escapeHtml(s[0])}</h2><div class="body">${slideHtml(s)}</div></div><div class="actions"><button class="primary" id="editSlide">✎ Edit Slide</button><button id="addSlide">＋ Add slide</button><button id="deleteSlide">Delete slide</button></div><div class="navrow"><button id="prevSlide" ${slideIndex===0?"disabled":""}>← Previous</button><button class="primary" id="nextSlide">${slideIndex===slides.length-1?"Finish":"Next →"}</button></div>`}
+function renderEditor(){const s=currentTopic.slides[slideIndex];const title=escapeHtml(s[0]);const html=slideHtml(s);return `<div class="panel"><div class="eyebrow">Slide editor</div><label for="slideTitle">Slide title</label><input id="slideTitle" value="${title}" style="width:100%;margin:8px 0 14px;padding:12px;border-radius:10px;background:#0d1727;color:var(--text);border:1px solid var(--line)"><p class="muted">Edit the text below. Add or remove bullet points, paragraphs and pictures. Pictures are inserted where your cursor is placed.</p><div class="actions"><button id="insertImage">＋ Insert picture at cursor</button><input id="imagePicker" type="file" accept="image/*" multiple hidden></div><div id="slideEditor" class="editor" contenteditable="true" spellcheck="true">${html}</div><div class="actions"><button class="primary" id="saveSlide">Save changes</button><button id="cancelEdit">Cancel</button></div><div class="note-meta">Tip: Select a point and delete it, or press Enter in a bullet list to add another point.</div></div>`}
+function renderNotes(){const saved=currentTopic.notes||"";return `<div class="panel"><div class="eyebrow">Shared subject notes</div><h2>${escapeHtml(currentTopic.name)}</h2><p class="muted">One notes page for this entire subject. These notes are shared across all slides in this topic and are saved separately from your study slides.</p><textarea id="topicNotes" placeholder="Write anything you want to remember about this subject...">${escapeHtml(saved)}</textarea><div class="actions"><button class="primary" id="saveTopicNotes">Save notes</button><button id="clearTopicNotes">Clear notes</button></div><div class="note-meta" id="topicNoteMeta">${saved?"Saved on this device":"No additional notes saved yet"}</div></div>`}
+function renderReview(){const cards=currentTopic.cards;if(!cards.length)return `<div class="panel"><h2>No review cards yet</h2><p class="muted">Save edited slide points to automatically create review cards from them.</p></div>`;const c=cards[cardIndex];return `<div class="progress"><span style="width:${(cardIndex+1)/cards.length*100}%"></span></div><div class="panel flashcard"><span class="pill">Card ${cardIndex+1} of ${cards.length}</span><div class="question">${escapeHtml(c[0])}</div>${revealed?`<div class="answer"><strong>Answer</strong><br>${escapeHtml(c[1])}</div>`:`<p class="muted">Think of your answer before revealing it.</p>`}<button class="primary" id="reveal">${revealed?"Hide answer":"Reveal answer"}</button></div><div class="navrow"><button id="prevCard" ${cardIndex===0?"disabled":""}>← Previous</button><button class="primary" id="nextCard">${cardIndex===cards.length-1?"Start again":"Next card →"}</button></div>`}
+function extractPoints(html){const doc=new DOMParser().parseFromString(html,"text/html");let pts=[...doc.querySelectorAll("li")].map(x=>x.textContent.trim()).filter(Boolean);if(!pts.length)pts=[...doc.querySelectorAll("p")].map(x=>x.textContent.trim()).filter(Boolean);return [...new Set(pts)]}
+function updateCardsFromSlide(slide){slide[4]=slide[4]||("slide-"+Date.now()+"-"+Math.random().toString(36).slice(2,7));currentTopic.cards=currentTopic.cards.filter(c=>!(c[2]&&c[2].generated&&c[2].slideId===slide[4]));const points=extractPoints(slide[3]||"");points.forEach(point=>{const question=`What should you remember about ${slide[0]}?`;currentTopic.cards.push([question,point,{generated:true,slideId:slide[4]}])})}
+function insertImageAtCursor(file){const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const max=1400,scale=Math.min(1,max/Math.max(img.width,img.height));const canvas=document.createElement("canvas");canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);const data=canvas.toDataURL("image/jpeg",.78);const image=document.createElement("img");image.src=data;image.alt=file.name;image.style.cssText="max-width:100%;height:auto;border-radius:12px;display:block;margin:12px auto";const editor=document.getElementById("slideEditor");editor.focus();const sel=window.getSelection();if(savedRange){sel.removeAllRanges();sel.addRange(savedRange)}if(sel&&sel.rangeCount){const range=sel.getRangeAt(0);range.deleteContents();range.insertNode(image);range.setStartAfter(image);range.collapse(true);sel.removeAllRanges();sel.addRange(range)}else editor.append(image);saveRange()};img.src=reader.result};reader.readAsDataURL(file)}
+let savedRange=null;function saveRange(){const sel=window.getSelection();if(sel&&sel.rangeCount)savedRange=sel.getRangeAt(0).cloneRange()}
+function bindSection(){const el=id=>document.getElementById(id);if(el("editSlide"))el("editSlide").onclick=()=>{app.querySelector(".slide").outerHTML=renderEditor();bindEditor()};if(el("addSlide"))el("addSlide").onclick=()=>{currentTopic.slides.push(["New slide","",[]]);slideIndex=currentTopic.slides.length-1;persist();renderTopic();if(el("editSlide"))el("editSlide").click()};if(el("deleteSlide"))el("deleteSlide").onclick=()=>{if(confirm("Delete this slide? Its review cards will remain.")){currentTopic.slides.splice(slideIndex,1);slideIndex=Math.max(0,slideIndex-1);persist();renderTopic()}};if(el("prevSlide"))el("prevSlide").onclick=()=>{slideIndex=Math.max(0,slideIndex-1);renderTopic()};if(el("nextSlide"))el("nextSlide").onclick=()=>{slideIndex=Math.min(currentTopic.slides.length-1,slideIndex+1);renderTopic()};if(el("saveTopicNotes"))el("saveTopicNotes").onclick=()=>{currentTopic.notes=el("topicNotes").value;if(persist())el("topicNoteMeta").textContent="Saved on this device ✓"};if(el("clearTopicNotes"))el("clearTopicNotes").onclick=()=>{if(confirm("Clear all shared notes for this subject?")){currentTopic.notes="";if(persist())renderTopic()}};if(el("reveal"))el("reveal").onclick=()=>{revealed=!revealed;renderTopic()};if(el("prevCard"))el("prevCard").onclick=()=>{cardIndex=Math.max(0,cardIndex-1);revealed=false;renderTopic()};if(el("nextCard"))el("nextCard").onclick=()=>{cardIndex=cardIndex===currentTopic.cards.length-1?0:cardIndex+1;revealed=false;renderTopic()}}
+function bindEditor(){const editor=document.getElementById("slideEditor");editor.addEventListener("keyup",saveRange);editor.addEventListener("mouseup",saveRange);editor.addEventListener("input",saveRange);document.getElementById("insertImage").onclick=()=>{saveRange();document.getElementById("imagePicker").click()};document.getElementById("imagePicker").onchange=e=>{[...e.target.files].forEach(insertImageAtCursor);e.target.value=""};document.getElementById("saveSlide").onclick=()=>{const title=document.getElementById("slideTitle").value.trim();if(!title){alert("Please enter a slide title.");return}const s=currentTopic.slides[slideIndex];s[0]=title;s[1]="";s[2]=extractPoints(editor.innerHTML);s[3]=editor.innerHTML;updateCardsFromSlide(s);if(persist())renderTopic()};document.getElementById("cancelEdit").onclick=renderTopic}
+backBtn.onclick=showHome;showHome();
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
+</body></html>

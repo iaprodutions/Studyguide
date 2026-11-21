@@ -1,0 +1,10 @@
+{
+  "name": "LPC & OPC Study Companion",
+  "short_name": "LPC & OPC",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#101827",
+  "description": "A personal study companion for LPC and OPC preparation.",
+  "icons": []
+}
